@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Result</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        .container {
+            background: rgba(51, 51, 51, 0.8);
+            border-radius: 10px;
+            padding: 20px;
+            max-width: 600px;
+            margin: 0 auto;
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+        h1 {
+            font-size: 2.5em;
+            margin: 0;
+            text-align: center;
+        }
+        p {
+            font-size: 1.2em;
+            text-align: center;
+            margin: 10px 0;
+        }
+        .return-button {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background-color: #1E90FF;
+            border: none;
+            border-radius: 8px;
+            color: #fff;
+            font-size: 1em;
+            cursor: pointer;
+            text-decoration: none;
+            transition: box-shadow 0.3s ease, transform 0.3s ease;
+        }
+        .return-button:hover {
+            box-shadow: 0 0 10px #1E90FF, 0 0 20px #1E90FF, 0 0 30px #1E90FF;
+            transform: scale(1.05);
+        }
+        /* Background animation */
+        .background {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 0;
+        }
+        .star {
+            position: absolute;
+            width: 4px;
+            height: 4px;
+            background: #1E90FF;
+            border-radius: 50%;
+            opacity: 0.7;
+            animation: moveStars 6s linear infinite;
+        }
+        @keyframes moveStars {
+            from { transform: translateY(0); }
+            to { transform: translateY(100vh); }
+        }
+    </style>
+</head>
+<body>
+    <div class="background" id="background"></div>
+    <div class="container">
+        <h1 id="score">Score: 0</h1>
+        <p>Think you can top your score? 💪 Come back in two days for a fresh set of questions and prove your skills! Ready for even tougher challenges? Head over to our YouTube channel,<a href="https://www.youtube.com/@smartsparklequiz" target="_blank" style="color: #1E90FF;">Smart Sparkle Quiz Channel</a> where new quizzes are waiting. Let's see if you’ve got what it takes!</p>
+        <a href="index.html" class="return-button">Return to Quiz</a>
+    </div>
+
+    <script>
+        // Get score from URL parameters and display it with animation
+        const urlParams = new URLSearchParams(window.location.search);
+        const finalScore = parseInt(urlParams.get("score"), 10) || 0;
+        const total = urlParams.get("total");
+
+        let currentScore = 0;
+        const scoreDisplay = document.getElementById("score");
+
+        // Animate score counting up
+        const interval = setInterval(() => {
+            scoreDisplay.innerText = `Your Score: ${currentScore} / ${total}`;
+            if (currentScore >= finalScore) {
+                clearInterval(interval);
+            } else {
+                currentScore++;
+            }
+        }, 100); // Adjust speed here
+
+        // Background stars animation
+        function createStars() {
+            for (let i = 0; i < 50; i++) {
+                const star = document.createElement("div");
+                star.classList.add("star");
+                star.style.left = Math.random() * 100 + "vw";
+                star.style.top = Math.random() * -100 + "vh";
+                star.style.animationDuration = Math.random() * 3 + 3 + "s";
+                star.style.opacity = Math.random();
+                document.getElementById("background").appendChild(star);
+            }
+        }
+        createStars();
+    </script>
+</body>
+</html>

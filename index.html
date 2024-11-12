@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz App</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #000;
+            color: #fff;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+        .container {
+            background: #333;
+            border-radius: 10px;
+            padding: 20px;
+            width: 90%;
+            max-width: 600px;
+            text-align: center;
+        }
+        h1 {
+            font-size: 1.8em;
+            margin: 10px 0;
+        }
+        .question {
+            margin: 20px 0;
+            text-align: left;
+        }
+        .options {
+            margin-top: 10px;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        button {
+            padding: 10px 20px;
+            background-color: #555;
+            border: none;
+            border-radius: 5px;
+            color: #fff;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #777;
+        }
+        .message {
+            color: #ff6347;
+            font-size: 0.9em;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Quiz Questions</h1>
+        <div id="quiz"></div>
+        <p id="message" class="message"></p>
+        <div class="nav-buttons">
+            <button id="next" onclick="nextPage()">Next</button>
+            <button id="submit" onclick="submitQuiz()">Submit</button>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { question: "What is the capital of France?", options: ["Paris", "Rome", "Berlin"], answer: "Paris" },
+            { question: "What is 5 + 3?", options: ["5", "8", "10"], answer: "8" },
+            { question: "What color is the sky?", options: ["Blue", "Green", "Red"], answer: "Blue" },
+            { question: "Who painted the Mona Lisa?", options: ["Da Vinci", "Picasso", "Van Gogh"], answer: "Da Vinci" },
+            { question: "How many continents are there?", options: ["5", "7", "6"], answer: "7" },
+            { question: "What is the square root of 64?", options: ["6", "8", "10"], answer: "8" },
+            { question: "Who is the main character in Harry Potter?", options: ["Ron", "Harry", "Hermione"], answer: "Harry" },
+            { question: "What planet is known as the Red Planet?", options: ["Mars", "Venus", "Earth"], answer: "Mars" },
+            { question: "What is H2O commonly known as?", options: ["Hydrogen", "Water", "Oxygen"], answer: "Water" },
+            { question: "Which animal is known as the King of the Jungle?", options: ["Elephant", "Tiger", "Lion"], answer: "Lion" }
+        ];
+
+        let currentPage = 0;
+        const questionsPerPage = 5;
+        let userAnswers = {};
+
+        // Function to display questions for the current page
+        function loadQuestions() {
+            const quizContainer = document.getElementById("quiz");
+            quizContainer.innerHTML = ""; // Clear previous questions
+            const start = currentPage * questionsPerPage;
+            const end = start + questionsPerPage;
+
+            questions.slice(start, end).forEach((q, index) => {
+                const questionDiv = document.createElement("div");
+                questionDiv.classList.add("question");
+                questionDiv.innerHTML = `<p>${q.question}</p>`;
+                const optionsDiv = document.createElement("div");
+                optionsDiv.classList.add("options");
+
+                q.options.forEach(option => {
+                    optionsDiv.innerHTML += `
+                        <label>
+                            <input type="radio" name="question${start + index}" value="${option}" onclick="saveAnswer(${start + index}, '${option}')"> ${option}
+                        </label><br>`;
+                });
+
+                questionDiv.appendChild(optionsDiv);
+                quizContainer.appendChild(questionDiv);
+            });
+
+            document.getElementById("message").innerText = ""; // Clear message on page load
+        }
+
+        // Save user's answer
+        function saveAnswer(questionIndex, answer) {
+            userAnswers[questionIndex] = answer;
+        }
+
+        // Check if all questions on the current page are answered
+        function checkAllAnswered(start, end) {
+            for (let i = start; i < end; i++) {
+                if (!userAnswers.hasOwnProperty(i)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Load the next set of questions
+        function nextPage() {
+            const start = currentPage * questionsPerPage;
+            const end = start + questionsPerPage;
+            
+            if (checkAllAnswered(start, end)) {
+                if (currentPage < Math.floor(questions.length / questionsPerPage) - 1) {
+                    currentPage++;
+                    loadQuestions();
+                }
+            } else {
+                document.getElementById("message").innerText = "Please answer all the questions before proceeding.";
+            }
+        }
+
+        // Submit the quiz and calculate score
+        function submitQuiz() {
+            const start = currentPage * questionsPerPage;
+            const end = start + questionsPerPage;
+
+            if (checkAllAnswered(start, end)) {
+                let score = 0;
+                questions.forEach((q, index) => {
+                    if (userAnswers[index] === q.answer) {
+                        score++;
+                    }
+                });
+                window.location.href = `result.html?score=${score}&total=${questions.length}`;
+            } else {
+                document.getElementById("message").innerText = "Please answer all the questions before submitting.";
+            }
+        }
+
+        // Initial load
+        loadQuestions();
+    </script>
+</body>
+</html>
